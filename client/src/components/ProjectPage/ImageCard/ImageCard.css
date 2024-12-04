@@ -1,0 +1,147 @@
+/* client/src/components/ImageCard/ImageCard.css */
+
+.image-card {
+  position: relative;
+  width: 200px; /* 必要に応じて調整 */
+  height: 200px; /* 高さを固定して正方形に */
+  margin: 10px;
+  border: 3px solid transparent; /* デフォルトの枠線 */
+  border-radius: 8px;
+  overflow: hidden; /* 画像がカードの外に溢れないようにする */
+  transition: box-shadow 0.3s, transform 0.3s, border-color 0.3s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+/* 選択時の強調された緑の枠 */
+.image-card.selected {
+  border: 7px solid #4caf50; /* 太めの明るい緑色の枠線 */
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.5); /* 緑色の柔らかいシャドウ */
+  transform: scale(1.05); /* 少し拡大して強調 */
+  transition: border 0.3s, box-shadow 0.3s, transform 0.3s; /* スムーズなアニメーション */
+}
+
+/* ホバー時の浮き出る効果 */
+.image-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* 画像のスタイル調整 */
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 画像をコンテナに合わせてトリミング */
+  display: block;
+}
+
+/* 画像名をホバー時のみ表示 */
+.image-name {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 14px;
+  z-index: 100; /* 画像より手前に表示 */
+}
+
+.image-card:hover .image-name {
+  opacity: 1;
+}
+
+/* アクションボタンのスタイル */
+.image-actions {
+  display: flex;
+  justify-content: space-around;
+  padding: 5px 0;
+  background-color: #f9f9f9;
+}
+
+/* デフォルトでは削除ボタンと移動ボタンを非表示 */
+.delete-image-button,
+.move-image-button {
+  display: none;
+}
+
+/* 削除ボタンを選択状態かつホバー時に表示 */
+.image-card.selected:hover .delete-image-button {
+  display: inline-block;
+}
+
+/* 移動ボタンを選択状態かつホバー時に表示 */
+.image-card.selected:hover .move-image-button {
+  display: inline-block;
+}
+
+/* 移動ボタンのスタイル */
+.move-image-button {
+  position: absolute; /* 絶対位置に設定 */
+  top: 10px;
+  left: 10px;
+  background-color: #ff9800;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  display: none; /* デフォルトでは非表示 */
+}
+
+/* プレースホルダーのスタイル調整 */
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 14px;
+}
+
+.verification-results {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.9); /* 半透明の背景色 */
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: none; /* デフォルトでは非表示 */
+  z-index: 10; /* 高いz-indexを設定 */
+}
+
+/* 検証結果を表示するトリガー */
+.image-card:hover .verification-results {
+  display: block;
+}
+
+.verification-results h4 {
+  margin-bottom: 8px;
+  font-size: 16px;
+  color: #333;
+}
+
+.verification-results ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.verification-results li {
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #555;
+}

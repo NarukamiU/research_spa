@@ -1,0 +1,37 @@
+/* client/src/pages/Label/Label.css */
+
+.label-gallery {
+  padding: 20px;
+}
+
+.image-upload-container {
+  margin-bottom: 15px;
+}
+
+.image-upload-card {
+  width: 150px;
+  height: 150px;
+  border: 2px dashed #1890ff;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.image-upload-card:hover {
+  background-color: #f0f8ff;
+  border-color: #40a9ff;
+}
+
+.plus-icon {
+  font-size: 48px;
+  color: #1890ff;
+}
+
+.image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}

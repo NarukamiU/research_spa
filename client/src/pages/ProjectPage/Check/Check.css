@@ -1,0 +1,28 @@
+/* client/src/pages/Check/Check.css */
+
+.check-page {
+  padding: 20px;
+}
+
+.check-labels {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.images-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.validation-progress {
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+.error-message {
+  margin-top: 20px;
+  color: red;
+  font-weight: bold;
+}

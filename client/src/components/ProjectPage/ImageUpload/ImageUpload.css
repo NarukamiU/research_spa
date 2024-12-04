@@ -1,0 +1,39 @@
+/* client/src/components/ImageUpload/ImageUpload.css */
+
+.image-upload-card {
+    background-color: #e0e0e0;
+    border: 1px dashed #bbb;
+    border-radius: 8px;
+    width: 150px;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+    position: relative;
+    margin-top: 20px; /* ラベルセクション内でのスペース調整 */
+}
+
+.image-upload-card:hover {
+    background-color: #d5d5d5;
+    border-color: #999;
+}
+
+.plus-icon {
+    font-size: 48px;
+    color: #555;
+    cursor: pointer;
+}
+
+.uploading-message {
+    margin-top: 10px;
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+}

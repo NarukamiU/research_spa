@@ -1,0 +1,166 @@
+/* client/src/components/Sidebar/Sidebar.css */
+
+.sidebar {
+    width: 200px;
+    height: 100vh;
+    background-color: #cccccc;
+    padding: 20px;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.home-sidebar {
+    /* ホームページ専用のスタイル */
+    background-color: #cccccc;
+}
+
+.project-sidebar {
+    /* プロジェクトページ専用のスタイル */
+    background-color: #999999;
+}
+
+.sidebar-menu {
+    list-style: none;
+    margin-top: 20px;
+    width: 100%;
+    padding: 0;
+}
+
+.sidebar-menu li {
+    margin: 15px 0;
+    font-size: 18px;
+    width: 100%;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.sidebar-menu li:hover {
+    background-color: #b3b3b3;
+}
+
+.sidebar-menu li.active {
+    background-color: #333333;
+    color: white;
+}
+
+.info-link {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+}
+
+/* プロジェクト名のスタイル調整 */
+.project-sidebar .sidebar-menu li:first-child {
+    font-weight: bold;
+    font-size: 20px;
+    background-color: #666666;
+    color: white;
+}
+
+.project-name {
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+    text-align: center;
+    color: white;
+    background-color: #666666;
+    padding: 10px 0;
+    border-radius: 4px;
+}
+
+.new-label-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 20px;
+    text-align: center;
+    transition: background-color 0.2s;
+}
+
+.new-label-button:hover {
+    background-color: #45a049;
+}
+
+.train-button-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.train-button {
+    padding: 10px 20px;
+    background-color: #ff9800; /* オレンジ色 */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.train-button:hover {
+    background-color: #fb8c00;
+}
+
+.train-button:disabled {
+    background-color: #ffc947;
+    cursor: not-allowed;
+}
+
+.training-message {
+    margin-top: 10px;
+    color: #4caf50; /* 緑色 */
+    font-size: 14px;
+}
+
+.progress-bar {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    margin-top: 10px;
+    height: 10px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background-color: #76c7c0;
+    width: 0%;
+    transition: width 0.5s;
+}
+
+.model-button-container {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.model-button {
+    padding: 10px 20px;
+    background-color: #2196F3; /* 青色 */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.model-button:hover {
+    background-color: #1976D2;
+}
+
+.model-button:disabled {
+    background-color: #90CAF9;
+    cursor: not-allowed;
+}
