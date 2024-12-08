@@ -128,12 +128,13 @@ const useVerificationResults = ({ projectId, user }: UseVerificationResultsProps
         const updatedResults: { [key: string]: VerificationResults } = {};
 
         for (const [label, result] of Object.entries(results)) {
-          const imagesWithUrls = result.images.map((image: any) => ({
+          const verificationResult = result as VerificationResults;
+          const imagesWithUrls = verificationResult.images.map((image: any) => ({
             ...image,
             url: `http://localhost:3001/uploads/${user.username}/image-classing/${projectId}/verify-data/${label}/${image.name}`,
           }));
           updatedResults[label] = {
-            ...result,
+            ...verificationResult,
             images: imagesWithUrls,
           };
         }

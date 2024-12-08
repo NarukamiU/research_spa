@@ -9,10 +9,11 @@
   border-radius: 8px;
   overflow: hidden; /* 画像がカードの外に溢れないようにする */
   transition: box-shadow 0.3s, transform 0.3s, border-color 0.3s;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0; /* 画像が読み込まれていない時の背景色 */
 }
 
 /* 選択時の強調された緑の枠 */

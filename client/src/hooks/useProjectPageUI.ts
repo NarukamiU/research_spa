@@ -1,10 +1,7 @@
-// client/src/hooks/useProjectPage.ts
+// client/src/hooks/useProjectPageUI.ts
 
 import { useState } from 'react';
 
-interface UseProjectPageProps {
-  labels: string[];
-}
 
 const useProjectPageUI = (labels: string[]) => {
   const [selectedMenu, setSelectedMenu] = useState<'Label' | 'Check'>('Label');
@@ -44,6 +41,14 @@ const useProjectPageUI = (labels: string[]) => {
     closeMoveModal();
   };
 
+  const handlePrev = () => {
+    setCurrentLightboxIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : prevIndex));
+  };
+
+  const handleNext = () => {
+    setCurrentLightboxIndex((prevIndex) => (prevIndex < lightboxImages.length - 1 ? prevIndex + 1 : prevIndex));
+  };
+
   return {
     selectedMenu,
     setSelectedMenu,
@@ -58,6 +63,8 @@ const useProjectPageUI = (labels: string[]) => {
     targetLabel,
     setTargetLabel,
     handleMoveImages,
+    handlePrev,
+    handleNext,
   };
 };
 

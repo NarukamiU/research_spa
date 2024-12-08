@@ -11,8 +11,15 @@ import MoveModal from '../../components/ProjectPage/MoveModal/MoveModal.tsx';
 import { AuthContext } from '../../contexts/AuthContext.tsx';
 import useProjectData from '../../hooks/useProjectData.ts';
 import useLabels from '../../hooks/useLabels.ts';
-import useProjectPage from '../../hooks/useProjectPageUI.ts';
+import useProjectPageUI from '../../hooks/useProjectPageUI.ts';
 import './ProjectPage.css';
+
+interface SelectedImage {
+  projectId: string;
+  labelName: string;
+  imageName: string;
+}
+
 
 
 const ProjectPage: React.FC = () => {
@@ -25,7 +32,6 @@ const ProjectPage: React.FC = () => {
     selectedMenu,
     setSelectedMenu,
     isMoveModalOpen,
-    openMoveModal,
     closeMoveModal,
     isLightboxOpen,
     openLightbox,
@@ -37,7 +43,7 @@ const ProjectPage: React.FC = () => {
     handleMoveImages,
     handlePrev,
     handleNext,
-  } = useProjectPage(labels);
+  } = useProjectPageUI(labels);
 
 
   // 追加: selectedImages の状態
@@ -48,9 +54,8 @@ const ProjectPage: React.FC = () => {
       <Sidebar
         username={user?.username || 'User'}
         selectedMenu={selectedMenu}
-        onSelectMenu={setSelectedMenu as (menu: 'Label' | 'Check') => void}
+        onSelectMenu={setSelectedMenu as (menu: 'Project' | 'Setting' | 'Label' | 'Check') => void}
         page="project"
-        projectName={project?.name || 'プロジェクト名未指定'}
         projectId={project?.id || ''}
       />
       <main className="main-content">
@@ -62,7 +67,6 @@ const ProjectPage: React.FC = () => {
               <Label
                 projectId={project?.id || ''}
                 user={user}
-                openMoveModal={openMoveModal}
                 openLightbox={openLightbox}
                 setSelectedImages={setSelectedImages}
               />
@@ -71,7 +75,6 @@ const ProjectPage: React.FC = () => {
               <Check
                 projectId={project?.id || ''}
                 user={user}
-                openMoveModal={openMoveModal}
                 openLightbox={openLightbox}
                 setSelectedImages={setSelectedImages}
               />
@@ -81,10 +84,10 @@ const ProjectPage: React.FC = () => {
                 labels={labels}
                 targetLabel={targetLabel}
                 setTargetLabel={setTargetLabel}
-                selectedImages={selectedImages} // `Check` コンポーネントから選択された画像を渡す必要があります
+                selectedImages={selectedImages}
                 handleMoveImages={handleMoveImages}
                 closeMoveModal={closeMoveModal}
-                dataType='training' // `Label` と `Check` で処理を分岐するための情報
+                dataType='training' 
               />
             )}
             {isMoveModalOpen && selectedMenu === 'Check' && (
@@ -92,10 +95,10 @@ const ProjectPage: React.FC = () => {
               labels={labels}
               targetLabel={targetLabel}
               setTargetLabel={setTargetLabel}
-              selectedImages={selectedImages} // `Check` コンポーネントから選択された画像を渡す必要があります
+              selectedImages={selectedImages} 
               handleMoveImages={handleMoveImages}
               closeMoveModal={closeMoveModal}
-              dataType="verify" // Checkの場合
+              dataType="verify"
               />
             )}
             {isLightboxOpen && (

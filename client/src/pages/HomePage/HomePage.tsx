@@ -17,7 +17,7 @@ const Setting = React.lazy(() => import('../../components/HomePage/Setting/Setti
 const HomePage: React.FC = () => {
   const { projects, loading, error, refreshProjects } = useProjects();
   const { user } = useContext(AuthContext); // useContext を使用してユーザー情報を取得
-  const [selectedMenu, setSelectedMenu] = useState<'Project' | 'Setting'>('Project');
+  const [selectedMenu, setSelectedMenu] = useState<'Project' | 'Setting' | 'Label' | 'Check'>('Project');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -58,7 +58,7 @@ const HomePage: React.FC = () => {
   };
 
   // イベントハンドラーをメモ化
-  const handleSelectMenu = useCallback((menu: 'Project' | 'Setting') => {
+  const handleSelectMenu = useCallback((menu: 'Project' | 'Setting' | 'Label' | 'Check') => {
     setSelectedMenu(menu);
   }, []);
 
@@ -69,6 +69,7 @@ const HomePage: React.FC = () => {
         selectedMenu={selectedMenu}
         onSelectMenu={handleSelectMenu}
         page="home"
+        projectId="" // Provide a valid projectId or an empty string if not applicable
       />
       <main className="main-content">
         {selectedMenu === 'Project' && (

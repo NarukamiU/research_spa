@@ -16,6 +16,7 @@ interface AuthContextType {
   user: User | null;
   refreshAuth: () => void;
   logout: () => void;
+  socket: Socket | null; // 追加
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -24,9 +25,14 @@ export const AuthContext = createContext<AuthContextType>({
   user: null,
   refreshAuth: () => {},
   logout: () => {},
+  socket: null,
 });
 
-export const AuthProvider: React.FC = ({ children }) => {
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
@@ -98,7 +104,7 @@ export const AuthProvider: React.FC = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, loading, user, refreshAuth, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, loading, user, refreshAuth, logout, socket }}>
       {children}
     </AuthContext.Provider>
   );
