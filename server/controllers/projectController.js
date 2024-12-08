@@ -61,9 +61,6 @@ exports.createProject = async (req, res) => {
 
     await mkdir(trainingDataDir, { recursive: true });
     await mkdir(verifyDataDir, { recursive: true });
-    
-    // セッションIDの取得
-    const sessionID = req.sessionID;
 
     // Socketに通知する処理は別途Socketハンドラー内で行う
 
@@ -140,7 +137,6 @@ exports.addTrainingLabel = async (req, res) => {
   }
 
   const labelDir = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'training-data', labelName);
-  console.log(labelDir);
   try {
     await mkdir(labelDir, { recursive: true });
     res.json({ success: true, message: 'ラベルが正常に追加されました。' });
@@ -149,253 +145,6 @@ exports.addTrainingLabel = async (req, res) => {
     return res.status(500).json({ success: false, message: 'ラベルディレクトリの作成に失敗しました。' });
   }
 };
-
-
-// トレーニングデータ用ラベルリネーム
-exports.renameTrainingLabel = async (req, res) => {
-  const username = req.session.username;
-  const { projectId, labelName } = req.params;
-  const { newLabelName } = req.body;
-
-  if (!newLabelName) {
-    return res.status(400).json({ success: false, message: '新しいラベル名が必要です。' });
-  }
-
-  const oldLabelDir = path.join(
-    __dirname,
-    '..',
-    '..',
-    'uploads',
-    username,
-    'image-classing',
-    projectId,
-    'training-data',
-    labelName
-  );
-  const newLabelDir = path.join(
-    __dirname,
-    '..',
-    '..',
-    'uploads',
-    username,
-    'image-classing',
-    projectId,
-    'training-data',
-    newLabelName
-  );
-
-  try {
-    // 新しいラベルディレクトリが既に存在するか確認
-    await access(newLabelDir, fs.constants.F_OK);
-    // 存在する場合はエラーを返す
-    return res.status(400).json({ success: false, message: '新しいラベル名が既に存在します。' });
-  } catch (err) {
-    if (err.code !== 'ENOENT') {
-      console.error('ラベルリネームエラー:', err);
-      return res.status(500).json({ success: false, message: 'ラベルのリネームに失敗しました。' });
-    }
-    // 新しいディレクトリが存在しない場合はリネームを実行
-  }
-
-  try {
-    await fs.promises.rename(oldLabelDir, newLabelDir);
-    res.json({ success: true, message: 'ラベルがリネームされました。' });
-  } catch (err) {
-    console.error('ラベルリネームエラー:', err);
-    res.status(500).json({ success: false, message: 'ラベルのリネームに失敗しました。' });
-  }
-};
-
-// トレーニングデータ用ラベル削除
-exports.deleteTrainingLabel = async (req, res) => {
-  const username = req.session.username;
-  const { projectId, labelName } = req.params;
-
-  const labelDir = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'training-data', labelName);
-
-  try {
-    await rm(labelDir, { recursive: true, force: true });
-    res.json({ success: true, message: 'ラベルが正常に削除されました。' });
-  } catch (err) {
-    console.error('ラベルディレクトリ削除エラー:', err);
-    return res.status(500).json({ success: false, message: 'ラベルディレクトリの削除に失敗しました。' });
-  }
-};
-
-
-exports.deleteTrainingLabelImages = async (req, res) => {
-  const username = req.session.username;
-  const { projectId, labelName, imageName } = req.params;
-
-  if (!projectId || !labelName || !imageName) {
-    return res.status(400).json({ success: false, message: '必要なパラメータが不足しています。' });
-  }
-
-  const imagePath = path.join(
-    __dirname,
-    '..',
-    '..',
-    'uploads',
-    username,
-    'image-classing',
-    projectId,
-    'training-data',
-    labelName,
-    imageName
-  );
-
-  try {
-    // 画像ファイルが存在するか確認
-    await access(imagePath, fs.constants.F_OK);
-
-    // 画像ファイルを削除
-    await unlink(imagePath);
-
-    console.log(`画像削除成功: ${imagePath}`);
-    return res.json({ success: true, message: '画像の削除に成功しました。' });
-  } catch (error) {
-    if (error.code === 'ENOENT') {
-      console.error(`画像が存在しません: ${imagePath}`);
-      return res.status(404).json({ success: false, message: `画像 "${imageName}" が見つかりません。` });
-    }
-
-    console.error('画像削除エラー:', error);
-    return res.status(500).json({ success: false, message: '画像の削除に失敗しました。' });
-  }
-};
-
-// トレーニングデータ用ラベル一覧取得
-exports.getTrainingLabels = async (req, res) => {
-  try {
-    const { projectId } = req.params;
-    const username = req.session.username;
-
-    const labelsDir = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'training-data');
-    const labelDirs = await readdir(labelsDir);
-
-    const labelList = labelDirs.filter(file => {
-      const filePath = path.join(labelsDir, file);
-      return fs.statSync(filePath).isDirectory();
-    });
-
-    res.json({ success: true, labels: labelList });
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      console.error('ラベルディレクトリが存在しません:', err);
-      return res.status(404).json({ success: false, message: 'ラベルディレクトリが見つかりません。' });
-    }
-    console.error('ラベル一覧取得エラー:', err);
-    return res.status(500).json({ success: false, message: 'ラベル一覧の取得に失敗しました。' });
-  }
-};
-
-// トレーニングデータ用ラベル内の画像取得
-exports.getTrainingLabelImages = async (req, res) => {
-  const username = req.session.username;
-  const { projectId, labelName } = req.params;
-
-  const labelDir = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'training-data', labelName);
-
-  try {
-    await access(labelDir, fs.constants.F_OK);
-    const files = await readdir(labelDir);
-    const imageFiles = files.filter(file => {
-      const filePath = path.join(labelDir, file);
-      return fs.statSync(filePath).isFile() && /\.(jpg|jpeg|JPG|png|PNG|webp|bmp)$/.test(file);
-    });
-    res.json({ success: true, images: imageFiles });
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      console.error('ラベルディレクトリが存在しません:', err);
-      return res.status(404).json({ success: false, message: 'ラベルディレクトリが見つかりません。' });
-    }
-    console.error('ラベル画像取得エラー:', err);
-    return res.status(500).json({ success: false, message: 'ラベル画像の取得に失敗しました。' });
-  }
-};
-
-// トレーニングデータ用の画像アップロード
-exports.uploadTrainingImages = async (req, res) => {
-  if (!req.files || req.files.length === 0) {
-    return res.status(400).json({ success: false, message: 'アップロードする画像がありません。' });
-  }
-
-  try {
-    // 画像圧縮処理を並列で実行
-    const compressPromises = req.files.map(async (file) => {
-      const filePath = file.path;
-      await compressImage(filePath); // 画像を圧縮
-      return file.filename;
-    });
-
-    const uploadedFiles = await Promise.all(compressPromises);
-    res.json({ success: true, images: uploadedFiles });
-  } catch (error) {
-    console.error('画像アップロードエラー:', error);
-    res.status(500).json({ success: false, message: '画像のアップロード中にエラーが発生しました。' });
-  }
-};
-
-
-exports.moveTrainingImages = async (req, res) => {
-  const username = req.session.username;
-  const { projectId, label } = req.params;
-  const { targetLabel, images } = req.body; // images は画像名の配列
-
-  // バリデーション
-  if (!projectId || !label || !targetLabel || !images || !Array.isArray(images)) {
-    return res.status(400).json({ success: false, message: '必要なデータが不足しています。' });
-  }
-
-  try {
-    for (const imageName of images) {
-      const sourcePath = path.join(
-        __dirname,
-        '..',
-        '..',
-        'uploads',
-        username,
-        'image-classing',
-        projectId,
-        'training-data',
-        label,
-        imageName
-      );
-
-      const targetPath = path.join(
-        __dirname,
-        '..',
-        '..',
-        'uploads',
-        username,
-        'image-classing',
-        projectId,
-        'training-data',
-        targetLabel,
-        imageName
-      );
-
-      // ソースファイルの存在確認
-      await access(sourcePath, fs.constants.F_OK);
-
-      // ターゲットディレクトリの存在確認・作成
-      const targetDir = path.dirname(targetPath);
-      if (!fs.existsSync(targetDir)) {
-        fs.mkdirSync(targetDir, { recursive: true });
-      }
-
-      // ファイルの移動
-      await rename(sourcePath, targetPath);
-    }
-
-    console.log(`画像の移動成功: プロジェクトID=${projectId}, ラベル=${label} → ${targetLabel}`);
-    return res.json({ success: true, message: '画像の移動に成功しました。' });
-  } catch (error) {
-    console.error('画像移動エラー:', error);
-    return res.status(500).json({ success: false, message: '画像の移動に失敗しました。' });
-  }
-};
-
 
 // Verifyデータ用ラベル追加
 exports.addVerifyLabel = async (req, res) => {
@@ -418,6 +167,94 @@ exports.addVerifyLabel = async (req, res) => {
   }
 };
 
+
+// トレーニングデータ用ラベルリネーム
+exports.renameTrainingLabel = async (req, res) => {
+  const username = req.session.username;
+  const { projectId, labelName } = req.params;
+  const { newLabelName } = req.body;
+
+  if (!newLabelName) {
+    return res.status(400).json({ success: false, message: '新しいラベル名が必要です。' });
+  }
+
+  const oldLabelDir = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'training-data', labelName);
+  const newLabelDir = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'training-data', newLabelName);
+
+
+  try {
+    // 新しいラベルディレクトリが既に存在するか確認
+    await access(newLabelDir, fs.constants.F_OK);
+    return res.status(400).json({ success: false, message: '新しいラベル名が既に存在します。' });
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      console.error('ラベルリネームエラー:', err);
+      return res.status(500).json({ success: false, message: 'ラベルのリネームに失敗しました。' });
+    }
+    // 新しいディレクトリが存在しない場合はリネームを実行
+  }
+
+  try {
+    await rename(oldLabelDir, newLabelDir);
+    res.json({ success: true, message: 'ラベルがリネームされました。' });
+  } catch (err) {
+    console.error('ラベルリネームエラー:', err);
+    res.status(500).json({ success: false, message: 'ラベルのリネームに失敗しました。' });
+  }
+};
+
+
+// Verifyデータ用ラベルリネーム
+exports.renameVerifyLabel = async (req, res) => {
+  const username = req.session.username;
+  const { projectId, labelName } = req.params;
+  const { newLabelName } = req.body;
+
+  if (!newLabelName) {
+    return res.status(400).json({ success: false, message: '新しいラベル名が必要です。' });
+  }
+
+  const oldLabelDir = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'verify-data', labelName);
+  const newLabelDir = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'verify-data', newLabelName);
+
+  
+  try {
+    // 新しいラベルディレクトリが既に存在するか確認
+    await access(newLabelDir, fs.constants.F_OK);
+    return res.status(400).json({ success: false, message: '新しいラベル名が既に存在します。' });
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      console.error('ラベルリネームエラー:', err);
+      return res.status(500).json({ success: false, message: 'ラベルのリネームに失敗しました。' });
+    }
+    // 新しいディレクトリが存在しない場合はリネームを実行
+  }
+
+  try {
+    await rename(oldLabelDir, newLabelDir);
+    res.json({ success: true, message: 'ラベルをリネームしました。' });
+  } catch (err) {
+    console.error('Verifyラベルリネームエラー:', err);
+    res.status(500).json({ success: false, message: 'ラベルのリネームに失敗しました。' });
+  }
+};
+
+// トレーニングデータ用ラベル削除
+exports.deleteTrainingLabel = async (req, res) => {
+  const username = req.session.username;
+  const { projectId, labelName } = req.params;
+
+  const labelDir = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'training-data', labelName);
+
+  try {
+    await rm(labelDir, { recursive: true, force: true });
+    res.json({ success: true, message: 'ラベルが正常に削除されました。' });
+  } catch (err) {
+    console.error('ラベルディレクトリ削除エラー:', err);
+    return res.status(500).json({ success: false, message: 'ラベルディレクトリの削除に失敗しました。' });
+  }
+};
+
 // Verifyデータ用ラベル削除
 exports.deleteVerifyLabel = async (req, res) => {
   const username = req.session.username;
@@ -434,11 +271,87 @@ exports.deleteVerifyLabel = async (req, res) => {
   }
 };
 
+exports.deleteTrainingLabelImages = async (req, res) => {
+  const username = req.session.username;
+  const { projectId, labelName, imageName } = req.params;
+
+  if (!projectId || !labelName || !imageName) {
+    return res.status(400).json({ success: false, message: '必要なパラメータが不足しています。' });
+  }
+
+  const imagePath = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'training-data', labelName, imageName);
+
+  try {
+    // 画像ファイルが存在するか確認
+    await access(imagePath, fs.constants.F_OK);
+    // 画像ファイルを削除
+    await unlink(imagePath);
+    console.log(`画像削除成功: ${imagePath}`);
+    return res.json({ success: true, message: '画像の削除に成功しました。' });
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      console.error(`画像が存在しません: ${imagePath}`);
+      return res.status(404).json({ success: false, message: `画像 "${imageName}" が見つかりません。` });
+    }
+    console.error('画像削除エラー:', error);
+    return res.status(500).json({ success: false, message: '画像の削除に失敗しました。' });
+  }
+};
+
+exports.deleteVerifyLabelImages = async (req, res) => {
+  const username = req.session.username;
+  const { projectId, labelName, imageName } = req.params;
+
+  if (!projectId || !labelName || !imageName) {
+    return res.status(400).json({ success: false, message: '必要なパラメータが不足しています。' });
+  }
+
+  const imagePath = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'verify-data', labelName, imageName);
+
+  try {
+    // 画像ファイルが存在するか確認
+    await access(imagePath, fs.constants.F_OK);
+    // 画像ファイルを削除
+    await unlink(imagePath);
+    console.log(`画像削除成功: ${imagePath}`);
+    return res.json({ success: true, message: '画像の削除に成功しました。' });
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      console.error(`画像が存在しません: ${imagePath}`);
+      return res.status(404).json({ success: false, message: `画像 "${imageName}" が見つかりません。` });
+    }
+
+    console.error('画像削除エラー:', error);
+    return res.status(500).json({ success: false, message: '画像の削除に失敗しました。' });
+  }
+}
+
+// トレーニングデータ用ラベル一覧取得
+exports.getTrainingLabels = async (req, res) => {
+  const username = req.session.username;
+  const { projectId } = req.params;
+  const labelsDir = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'training-data');
+  try {
+    const labelDirs = await readdir(labelsDir);
+    const labelList = labelDirs.filter(file => {
+      const filePath = path.join(labelsDir, file);
+      return fs.statSync(filePath).isDirectory();
+    });
+    res.json({ success: true, labels: labelList });
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      console.error('ラベルディレクトリが存在しません:', err);
+      return res.status(404).json({ success: false, message: 'ラベルディレクトリが見つかりません。' });
+    }
+    console.error('ラベル一覧取得エラー:', err);
+    return res.status(500).json({ success: false, message: 'ラベル一覧の取得に失敗しました。' });
+  }
+};
+
 // Verifyデータ用ラベル一覧取得
 exports.getVerifyLabels = async (req, res) => {
   const username = req.session.username;
   const { projectId } = req.params;
-
   const verifyLabelsDir = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'verify-data');
 
   try {
@@ -459,17 +372,40 @@ exports.getVerifyLabels = async (req, res) => {
   }
 };
 
+// トレーニングデータ用ラベル内の画像取得
+exports.getTrainingLabelImages = async (req, res) => {
+  const username = req.session.username;
+  const { projectId, labelName } = req.params;
+  const labelDir = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'training-data', labelName);
+
+  try {
+    await access(labelDir, fs.constants.F_OK);
+    const files = await readdir(labelDir);
+    const imageFiles = files.filter(file => {
+      const ext = path.extname(file).toLowerCase();
+      return ['.jpg', '.jpeg', '.png', '.bmp', '.webp'].includes(ext);
+    });
+    res.json({ success: true, images: imageFiles });
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      console.error('ラベルディレクトリが存在しません:', err);
+      return res.status(404).json({ success: false, message: 'ラベルディレクトリが見つかりません。' });
+    }
+    console.error('ラベル画像取得エラー:', err);
+    return res.status(500).json({ success: false, message: 'ラベル画像の取得に失敗しました。' });
+  }
+};
+
 // Verifyデータ用ラベル内の画像取得
 exports.getVerifyLabelImages = async (req, res) => {
   const username = req.session.username;
   const { projectId, labelName } = req.params;
-
   const labelDir = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'verify-data', labelName);
 
   try {
     await access(labelDir, fs.constants.F_OK);
     const files = await readdir(labelDir);
-    const imageExtensions = ['.jpg', '.jpeg', '.JPG', '.PNG', '.png', '.bmp', '.webp'];
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.bmp', '.webp'];
     const imageFiles = files.filter(file => {
       const ext = path.extname(file).toLowerCase();
       return imageExtensions.includes(ext);
@@ -485,18 +421,15 @@ exports.getVerifyLabelImages = async (req, res) => {
   }
 };
 
-// verify用の画像アップロード（既存）
-exports.uploadVerifyImages = async (req, res) => {
+// トレーニングデータ用の画像アップロード
+exports.uploadTrainingImages = async (req, res) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ success: false, message: 'アップロードする画像がありません。' });
   }
 
   try {
-    // 画像圧縮処理を並列で実行
     const compressPromises = req.files.map(async (file) => {
-      const filePath = file.path;
-      await compressImage(filePath); // 画像を圧縮
-      return file.filename;
+      return await compressImage(file.path);
     });
 
     const uploadedFiles = await Promise.all(compressPromises);
@@ -507,134 +440,71 @@ exports.uploadVerifyImages = async (req, res) => {
   }
 };
 
-exports.deleteVerifyLabelImages = async (req, res) => {
-  const username = req.session.username;
-  const { projectId, labelName, imageName } = req.params;
-
-  if (!projectId || !labelName || !imageName) {
-    return res.status(400).json({ success: false, message: '必要なパラメータが不足しています。' });
+// verify用の画像アップロード
+exports.uploadVerifyImages = async (req, res) => {
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ success: false, message: 'アップロードする画像がありません。' });
   }
 
-  const imagePath = path.join(
-    __dirname,
-    '..',
-    '..',
-    'uploads',
-    username,
-    'image-classing',
-    projectId,
-    'verify-data',
-    labelName,
-    imageName
-  );
-
   try {
-    // 画像ファイルが存在するか確認
-    await access(imagePath, fs.constants.F_OK);
+    const compressPromises = req.files.map(async (file) => {
+      return await compressImage(file.path);
+    });
 
-    // 画像ファイルを削除
-    await unlink(imagePath);
-
-    console.log(`画像削除成功: ${imagePath}`);
-    return res.json({ success: true, message: '画像の削除に成功しました。' });
+    const uploadedFiles = await Promise.all(compressPromises);
+    res.json({ success: true, images: uploadedFiles });
   } catch (error) {
-    if (error.code === 'ENOENT') {
-      console.error(`画像が存在しません: ${imagePath}`);
-      return res.status(404).json({ success: false, message: `画像 "${imageName}" が見つかりません。` });
-    }
-
-    console.error('画像削除エラー:', error);
-    return res.status(500).json({ success: false, message: '画像の削除に失敗しました。' });
-  }
-}
-
-
-// Verifyデータ用ラベルリネーム
-exports.renameVerifyLabel = async (req, res) => {
-  const username = req.session.username;
-  const { projectId, labelName } = req.params;
-  const { newLabelName } = req.body;
-
-  if (!newLabelName) {
-    return res.status(400).json({ success: false, message: '新しいラベル名が必要です。' });
-  }
-
-  const oldLabelDir = path.join(
-    __dirname,
-    '..',
-    '..',
-    'uploads',
-    username,
-    'image-classing',
-    projectId,
-    'verify-data',
-    labelName
-  );
-  const newLabelDir = path.join(
-    __dirname,
-    '..',
-    '..',
-    'uploads',
-    username,
-    'image-classing',
-    projectId,
-    'verify-data',
-    newLabelName
-  );
-
-  try {
-    await rename(oldLabelDir, newLabelDir);
-    res.json({ success: true, message: 'ラベルをリネームしました。' });
-  } catch (err) {
-    console.error('Verifyラベルリネームエラー:', err);
-    res.status(500).json({ success: false, message: 'ラベルのリネームに失敗しました。' });
+    console.error('画像アップロードエラー:', error);
+    res.status(500).json({ success: false, message: '画像のアップロード中にエラーが発生しました。' });
   }
 };
 
 
 
+
+exports.moveTrainingImages = async (req, res) => {
+  const username = req.session.username;
+  const { projectId, label } = req.params;
+  const { targetLabel, images } = req.body; // images は画像名の配列
+
+  // バリデーション
+  if (!projectId || !label || !targetLabel || !images || !Array.isArray(images)) {
+    return res.status(400).json({ success: false, message: '必要なデータが不足しています。' });
+  }
+
+  try {
+    for (const imageName of images) {
+      const oldPath = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'training-data', label, imageName);
+      const newPath = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'training-data', targetLabel, imageName);
+      await rename(oldPath, newPath);
+    }
+
+    console.log(`画像の移動成功: プロジェクトID=${projectId}, ラベル=${label} → ${targetLabel}`);
+    return res.json({ success: true, message: '画像の移動に成功しました。' });
+  } catch (error) {
+    console.error('画像移動エラー:', error);
+    return res.status(500).json({ success: false, message: '画像の移動に失敗しました。' });
+  }
+};
+
 //検証画像の移動
 exports.moveVerifyImages = async (req, res) => {
+  const username = req.session.username;
+  const { projectId, label } = req.params; 
+  const { targetLabel, images } = req.body;
+
+
+  console.log('moveVerifyImages called with:', { username, projectId, label, targetLabel, images });
+  if (!username) {
+    return res.status(401).json({ success: false, message: '認証されていません。' });
+  }
+  if (!targetLabel || !images || !Array.isArray(images)) {
+    return res.status(400).json({ success: false, message: '必要なデータが不足しています。' });
+  }
   try {
-    const username = req.session.username;
-    const { projectId, label } = req.params; // `labelName` から `label` に変更
-    const { targetLabel, images } = req.body;
-
-    console.log('moveVerifyImages called with:', { username, projectId, label, targetLabel, images });
-
-    if (!username) {
-      return res.status(401).json({ success: false, message: '認証されていません。' });
-    }
-
-    if (!targetLabel || !images || !Array.isArray(images)) {
-      return res.status(400).json({ success: false, message: '必要なデータが不足しています。' });
-    }
-
     for (const imageName of images) {
-      const sourcePath = path.join(
-        __dirname,
-        '..',
-        '..',
-        'uploads',
-        username,
-        'image-classing',
-        projectId,
-        'verify-data',
-        label,
-        imageName
-      );
-
-      const targetDir = path.join(
-        __dirname,
-        '..',
-        '..',
-        'uploads',
-        username,
-        'image-classing',
-        projectId,
-        'verify-data',
-        targetLabel
-      );
+      const sourcePath = path.join(__dirname,'..', '..', 'uploads', username, 'image-classing', projectId, 'verify-data', label, imageName);
+      const targetDir = path.join( __dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'verify-data', targetLabel);
 
       const targetPath = path.join(targetDir, imageName);
 
@@ -709,11 +579,28 @@ exports.verifyData = async (req, res) => {
   const verifyDataPath = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'verify-data', label);
   const modelPath = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'model', 'model.json');
   const classPath = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'model', 'classes.json');
-
+  
   try {
     await fsp.access(modelPath, fs.constants.F_OK);
   } catch (err) {
     return res.status(400).json({ success: false, message: 'モデルが存在しません。学習を先に実行してください。' });
+  }
+
+  // 画像存在チェック
+  try {
+    const images = await readdir(verifyDataPath);
+    if (images.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: '検証対象のラベルに画像が一枚も存在しません。画像を追加してから検証を行ってください。'
+      });
+    }
+  } catch (err) {
+    console.error('画像チェックエラー:', err);
+    return res.status(500).json({
+      success: false,
+      message: '検証中に画像のチェックでエラーが発生しました。'
+    });
   }
 
   try {
@@ -738,27 +625,14 @@ exports.getVerificationResults = async (req, res) => {
   const username = req.session.username;
   const { projectId, label } = req.params;
 
-  const resultsPath = path.join(
-    __dirname,
-    '..',
-    '..',
-    'uploads',
-    username,
-    'image-classing',
-    projectId,
-    'verify-data',
-    label,
-    'verify-result.json'
-  );
+  const resultsPath = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'verify-data', label, 'verify-result.json');
 
   try {
     // ファイルの存在と読み取り権限を確認
     await fsp.access(resultsPath, fs.constants.R_OK);
-
     // ファイルを読み取る
     const data = await fsp.readFile(resultsPath, 'utf-8');
     const verificationResults = JSON.parse(data);
-
     res.json({ success: true, results: verificationResults });
   } catch (err) {
     console.error('Error fetching verification results:', err);
