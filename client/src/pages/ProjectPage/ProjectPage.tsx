@@ -11,7 +11,7 @@ import MoveModal from '../../components/ProjectPage/MoveModal/MoveModal.tsx';
 import { AuthContext } from '../../contexts/AuthContext.tsx';
 import useProjectData from '../../hooks/useProjectData.ts';
 import useLabels from '../../hooks/useLabels.ts';
-import useProjectPage from '../../hooks/useProjectPage.ts';
+import useProjectPage from '../../hooks/useProjectPageUI.ts';
 import './ProjectPage.css';
 
 

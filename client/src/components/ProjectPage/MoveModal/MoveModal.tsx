@@ -27,7 +27,7 @@ const MoveModal: React.FC<MoveModalProps> = ({
   selectedImages,
   handleMoveImages,
   closeMoveModal,
-  dataType, // 追加
+  dataType,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +56,6 @@ const MoveModal: React.FC<MoveModalProps> = ({
       if (response.data.success) {
         handleMoveImages();
         closeMoveModal();
-        alert('画像を移動しました。');
       } else {
         setError(response.data.message || '画像の移動に失敗しました。');
       }

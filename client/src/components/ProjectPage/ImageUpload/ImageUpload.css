@@ -13,7 +13,8 @@
     cursor: pointer;
     transition: background-color 0.2s, border-color 0.2s;
     position: relative;
-    margin-top: 20px; /* ラベルセクション内でのスペース調整 */
+    margin-top: 20px; 
+    text-align: center; 
 }
 
 .image-upload-card:hover {

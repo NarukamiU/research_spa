@@ -2,17 +2,16 @@
 
 import React, { useState } from 'react';
 import ImageCard from '../../../components/ProjectPage/ImageCard/ImageCard.tsx';
-import NewLabel from '../../../components/ProjectPage/NewLabel/NewLabel.tsx';
-import ImageUpload from '../../../components/ProjectPage/ImageUpload/ImageUpload.tsx';
 import MoveModal from '../../../components/ProjectPage/MoveModal/MoveModal.tsx';
+import ImageUpload from '../../../components/ProjectPage/ImageUpload/ImageUpload.tsx';
+import NewLabel from '../../../components/ProjectPage/NewLabel/NewLabel.tsx';
 import RenameLabelModal from '../../../components/ProjectPage/RenameLabelModal/RenameLabelModal.tsx';
-import useLabel from '../../../hooks/useLabel.ts';
+import useProjectPageCommon from '../../../hooks/useProjectPage.ts';
 import './Label.css';
 
 interface LabelProps {
   projectId: string;
   user: { username: string } | null;
-  openMoveModal: () => void;
   openLightbox: (images: string[], index: number) => void;
   setSelectedImages: (images: SelectedImage[]) => void;
 }
@@ -26,7 +25,6 @@ interface SelectedImage {
 const Label: React.FC<LabelProps> = ({
   projectId,
   user,
-  openMoveModal,
   openLightbox,
   setSelectedImages,
 }) => {
@@ -37,15 +35,28 @@ const Label: React.FC<LabelProps> = ({
     error,
     handleRenameLabel,
     handleDeleteLabel,
-    handleDeleteImage,
+    handleDeleteSelectedImages,
     handleSelectImage,
     handleLabelAdded,
     handleMoveImages,
-    isMoveModalOpen,
-    moveModalTargetLabel,
-    setMoveModalTargetLabel,
-    closeMoveModal,
-  } = useLabel(projectId, user);
+  } = useProjectPageCommon({ projectId, user, dataType: 'training' });
+
+  // モーダルのステートを個別に管理
+  const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
+  const [moveModalTargetLabel, setMoveModalTargetLabel] = useState('');
+
+  const openMoveModal = () => {
+    if (selectedImages.length === 0) {
+      alert('移動する画像を選択してください。');
+      return;
+    }
+    setIsMoveModalOpen(true);
+  };
+
+  const closeMoveModal = () => {
+    setIsMoveModalOpen(false);
+    setMoveModalTargetLabel('');
+  };
 
   // State for Rename Modal
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
@@ -76,13 +87,6 @@ const Label: React.FC<LabelProps> = ({
     <div className="label-gallery">
       <div className="label-actions">
         <NewLabel projectId={projectId} onLabelAdded={handleLabelAdded} labelType='training-data'/>
-        <button
-          onClick={openMoveModal}
-          disabled={selectedImages.length === 0}
-          className="move-button"
-        >
-          選択した画像を移動
-        </button>
       </div>
       {error && <p className="error-message">{error}</p>}
       {labels.map((label) => (
@@ -118,7 +122,7 @@ const Label: React.FC<LabelProps> = ({
                   imageName={image}
                   username={user?.username || ''}
                   altText={image}
-                  onDelete={() => handleDeleteImage(label, image)}
+                  onDelete={handleDeleteSelectedImages} 
                   onSelect={() => handleSelectImage({ projectId, labelName: label, imageName: image })}
                   isSelected={selectedImages.some(
                     (img) =>
@@ -126,10 +130,7 @@ const Label: React.FC<LabelProps> = ({
                       img.labelName === label &&
                       img.imageName === image
                   )}
-                  onMove={() => {
-                    handleSelectImage({ projectId, labelName: label, imageName: image });
-                    openMoveModal();
-                  }}
+                  onMove={openMoveModal}
                   onOpenLightbox={() => {
                     openLightbox(
                       labelImages[label].map(
@@ -151,10 +152,9 @@ const Label: React.FC<LabelProps> = ({
             labelName={label}
             user={user}
             onUploadSuccess={() => {
-              // 画像アップロード後の更新処理（例: 画像一覧を再取得）
               handleLabelAdded();
             }}
-            dataType="training" // データタイプを指定
+            dataType="training"
           />
         </div>
       ))}
@@ -166,7 +166,7 @@ const Label: React.FC<LabelProps> = ({
           selectedImages={selectedImages}
           handleMoveImages={handleMoveImages}
           closeMoveModal={closeMoveModal}
-          dataType="training" // 追加: データタイプを指定
+          dataType="training"
         />
       )}
       {/* Rename Label Modal */}

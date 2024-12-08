@@ -6,7 +6,7 @@ import MoveModal from '../../../components/ProjectPage/MoveModal/MoveModal.tsx';
 import ImageUpload from '../../../components/ProjectPage/ImageUpload/ImageUpload.tsx';
 import NewLabel from '../../../components/ProjectPage/NewLabel/NewLabel.tsx';
 import RenameLabelModal from '../../../components/ProjectPage/RenameLabelModal/RenameLabelModal.tsx';
-import useCheck from '../../../hooks/useCheck.ts';
+import useProjectPageCommon from '../../../hooks/useProjectPage.ts';
 import './Check.css';
 
 interface CheckProps {
@@ -33,41 +33,53 @@ const Check: React.FC<CheckProps> = ({
     labelImages,
     selectedImages,
     verifiedResults,
-    isMoveModalOpen,
-    moveModalTargetLabel,
     error,
     handleUploadSuccess,
     handleRenameLabel,
     handleVerify,
-    handleDeleteImage,
+    handleDeleteSelectedImages,
     handleDeleteLabel,
     handleSelectImage,
     handleMoveImages,
-    openMoveModal,
-    closeMoveModal,
-    setMoveModalTargetLabel,
     handleLabelAdded,
     verificationStatus,
-  } = useCheck(projectId, user);
+  } = useProjectPageCommon({ projectId, user, dataType: 'verify' });
 
-   // State for Rename Modal
-   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
-   const [currentLabelToRename, setCurrentLabelToRename] = useState<string>('');
+  // モーダルのステートを個別に管理
+  const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
+  const [moveModalTargetLabel, setMoveModalTargetLabel] = useState('');
 
-   const openRenameModal = (label: string) => {
-     setCurrentLabelToRename(label);
-     setIsRenameModalOpen(true);
-   };
+  const openMoveModal = () => {
+    if (selectedImages.length === 0) {
+      alert('移動する画像を選択してください。');
+      return;
+    }
+    setIsMoveModalOpen(true);
+  };
 
-   const closeRenameModal = () => {
-     setIsRenameModalOpen(false);
-     setCurrentLabelToRename('');
-   };
+  const closeMoveModal = () => {
+    setIsMoveModalOpen(false);
+    setMoveModalTargetLabel('');
+  };
 
-   const handleRename = (newLabelName: string) => {
-     handleRenameLabel(currentLabelToRename, newLabelName);
-     closeRenameModal();
-   };
+  // State for Rename Modal
+  const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
+  const [currentLabelToRename, setCurrentLabelToRename] = useState<string>('');
+
+  const openRenameModal = (label: string) => {
+    setCurrentLabelToRename(label);
+    setIsRenameModalOpen(true);
+  };
+
+  const closeRenameModal = () => {
+    setIsRenameModalOpen(false);
+    setCurrentLabelToRename('');
+  };
+
+  const handleRename = (newLabelName: string) => {
+    handleRenameLabel(currentLabelToRename, newLabelName);
+    closeRenameModal();
+  };
 
   // `selectedImages` が変更されたら親に通知
   React.useEffect(() => {
@@ -82,13 +94,6 @@ const Check: React.FC<CheckProps> = ({
       {error && <p className="error-message">{error}</p>}
 
       <div className="check-actions">
-        <button
-          onClick={openMoveModal}
-          disabled={selectedImages.length === 0}
-          className="move-button"
-        >
-          選択した画像を移動
-        </button>
         <NewLabel
           projectId={projectId}
           onLabelAdded={handleLabelAdded}
@@ -101,7 +106,6 @@ const Check: React.FC<CheckProps> = ({
           {labels.map((label) => (
             <div key={label} className="check-label-section">
               <div className="label-header">
-                {/* ラベル名と画像数を表示 */}
                 <h2>
                   {label} ({labelImages[label]?.length || 0})
                 </h2>
@@ -140,11 +144,8 @@ const Check: React.FC<CheckProps> = ({
                       imageName={image}
                       username={user?.username || ''}
                       altText={image}
-                      onDelete={() => handleDeleteImage(label, image)}
-                      onMove={() => {
-                        handleSelectImage({ projectId, labelName: label, imageName: image });
-                        openMoveModal();
-                      }}
+                      onDelete={handleDeleteSelectedImages}
+                      onMove={openMoveModal}
                       onSelect={() => handleSelectImage({ projectId, labelName: label, imageName: image })}
                       isSelected={selectedImages.some(
                         (img) => img.labelName === label && img.imageName === image
@@ -172,7 +173,7 @@ const Check: React.FC<CheckProps> = ({
                 onUploadSuccess={() => {
                   handleUploadSuccess(label);
                 }}
-                dataType="verify" // データタイプを指定
+                dataType="verify"
               />
             </div>
           ))}
@@ -189,7 +190,7 @@ const Check: React.FC<CheckProps> = ({
           selectedImages={selectedImages}
           handleMoveImages={handleMoveImages}
           closeMoveModal={closeMoveModal}
-          dataType="verify" // データタイプを指定
+          dataType="verify"
         />
       )}
       {/* Rename Label Modal */}

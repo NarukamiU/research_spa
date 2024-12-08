@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import api from '../../../api.ts';
-//import './NewProjectModal.css';
+import './NewProjectModal.css';
 
 interface NewProjectModalProps {
   isOpen: boolean;
@@ -21,9 +21,18 @@ const NewProjectModal: React.FC<NewProjectModalProps> = ({ isOpen, onClose, onPr
     }
 
     // 正規表現を用いたプロジェクト名のフォーマットチェック
-    const isValid = /^[a-zA-Z0-9-_ ]{3,30}$/.test(projectName);
+    //プロジェクト名は3〜30文字の英数字、ハイフン、アンダースコア、スペースのみ
+    //const isValid = /^[a-zA-Z0-9-_ ]{3,30}$/.test(projectName);
+
+    
+    /*
+    \u3040-\u309F: ひらがな
+    \u30A0-\u30FF: カタカナ
+    \u4E00-\u9FFF: 漢字（CJK統合漢字）
+    */
+    const isValid = /^[a-zA-Z0-9-_ \u3040-\u30FF\u4E00-\u9FFF]{3,30}$/.test(projectName);
     if (!isValid) {
-      setError('プロジェクト名は3〜30文字の英数字、ハイフン、アンダースコア、スペースのみ使用できます。');
+      setError('プロジェクト名は3〜30文字の英数字、ハイフン、アンダースコア、スペース、ひらがな、カタカナ、漢字のみ使用できます。');
       return;
     }
 

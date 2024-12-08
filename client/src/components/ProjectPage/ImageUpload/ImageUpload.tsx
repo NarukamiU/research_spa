@@ -11,6 +11,8 @@ interface ImageUploadProps {
   dataType: 'training' | 'verify';
 }
 
+const MAX_FILE_SIZE = 8 * 1024 * 1024; // 8MB
+
 const ImageUpload: React.FC<ImageUploadProps> = ({
   projectId,
   labelName,
@@ -26,6 +28,14 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     if (!files || files.length === 0) {
       alert('アップロードする画像を選択してください。');
       return;
+    }
+
+    // ファイルサイズのチェック
+    for (let i = 0; i < files.length; i++) {
+      if (files[i].size > MAX_FILE_SIZE) {
+        alert(`ファイル「${files[i].name}」は8MBを超えないでください。`);
+        return;
+      }
     }
 
     const formData = new FormData();
@@ -48,13 +58,16 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
       if (response.data.success) {
         onUploadSuccess();
-        alert('画像をアップロードしました。');
       } else {
         setError(response.data.message || '画像のアップロードに失敗しました。');
       }
     } catch (err: any) {
-      console.error('画像アップロードエラー:', err);
-      setError(err.response?.data?.message || '画像アップロード中にエラーが発生しました。');
+      if (err.response && err.response.status === 413) {
+        setError('アップロードサイズが8MBを超えています。');
+      } else {
+        console.error('画像アップロードエラー:', err);
+        setError(err.response?.data?.message || '画像アップロード中にエラーが発生しました。');
+      }
     } finally {
       setIsUploading(false);
       // ファイル入力をリセット
@@ -63,10 +76,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   };
 
   return (
-    <div className="image-upload-card">
-      <label htmlFor={`file-input-${labelName}`} className="plus-icon">
-        +
-      </label>
+      <label htmlFor={`file-input-${labelName}`} className="image-upload-card">
       <input
         id={`file-input-${labelName}`}
         type="file"
@@ -75,9 +85,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         onChange={handleFileChange}
         style={{ display: 'none' }}
       />
+      <span className="plus-icon">+</span>
       {isUploading && <p className="uploading-message">アップロード中...</p>}
       {error && <p className="error-message">{error}</p>}
-    </div>
+    </label>
   );
 };
 

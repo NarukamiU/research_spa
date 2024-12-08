@@ -4,10 +4,8 @@ const path = require('path');
 const fs = require('fs');
 const fsp = require('fs/promises');
 const util = require('util');
-const multer = require('multer');
-const sharp = require('sharp');
 const {sessionSocketMap} = require('../sockets/socketHandler');
-const { compressImage } = require('../helpers/imageHelper'); // 追加
+const { compressImage } = require('../helpers/imageHelper');
 const TFhelper = require('../TFhelper');
 
 
@@ -268,19 +266,19 @@ exports.deleteTrainingLabelImages = async (req, res) => {
 
 // トレーニングデータ用ラベル一覧取得
 exports.getTrainingLabels = async (req, res) => {
-  const username = req.session.username;
-  const { projectId } = req.params;
-
-  const labelsDir = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'training-data');
-
   try {
-    await access(labelsDir, fs.constants.F_OK);
-    const files = await readdir(labelsDir);
-    const labelDirs = files.filter(file => {
+    const { projectId } = req.params;
+    const username = req.session.username;
+
+    const labelsDir = path.join(__dirname, '..', '..', 'uploads', username, 'image-classing', projectId, 'training-data');
+    const labelDirs = await readdir(labelsDir);
+
+    const labelList = labelDirs.filter(file => {
       const filePath = path.join(labelsDir, file);
       return fs.statSync(filePath).isDirectory();
     });
-    res.json({ success: true, labels: labelDirs });
+
+    res.json({ success: true, labels: labelList });
   } catch (err) {
     if (err.code === 'ENOENT') {
       console.error('ラベルディレクトリが存在しません:', err);
@@ -303,7 +301,7 @@ exports.getTrainingLabelImages = async (req, res) => {
     const files = await readdir(labelDir);
     const imageFiles = files.filter(file => {
       const filePath = path.join(labelDir, file);
-      return fs.statSync(filePath).isFile() && /\.(jpg|jpeg|png|gif)$/.test(file);
+      return fs.statSync(filePath).isFile() && /\.(jpg|jpeg|JPG|png|PNG|webp|bmp)$/.test(file);
     });
     res.json({ success: true, images: imageFiles });
   } catch (err) {
@@ -471,7 +469,7 @@ exports.getVerifyLabelImages = async (req, res) => {
   try {
     await access(labelDir, fs.constants.F_OK);
     const files = await readdir(labelDir);
-    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+    const imageExtensions = ['.jpg', '.jpeg', '.JPG', '.PNG', '.png', '.bmp', '.webp'];
     const imageFiles = files.filter(file => {
       const ext = path.extname(file).toLowerCase();
       return imageExtensions.includes(ext);
