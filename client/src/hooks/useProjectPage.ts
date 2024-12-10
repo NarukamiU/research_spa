@@ -53,7 +53,7 @@ const useProjectPageCommon = ({ projectId, user, dataType }: UseProjectPageCommo
 
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/image-classing/projects/${projectId}/${dataType}-data/labels`,
+        `/api/image-classing/projects/${projectId}/${dataType}-data/labels`,
         { withCredentials: true }
       );
 
@@ -73,7 +73,7 @@ const useProjectPageCommon = ({ projectId, user, dataType }: UseProjectPageCommo
 
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/image-classing/projects/${projectId}/${dataType}-data/labels/${label}/images`,
+        `/api/image-classing/projects/${projectId}/${dataType}-data/labels/${label}/images`,
         { withCredentials: true }
       );
 
@@ -99,13 +99,14 @@ const useProjectPageCommon = ({ projectId, user, dataType }: UseProjectPageCommo
 
     try {
       const response = await axios.put(
-        `http://localhost:3001/api/image-classing/projects/${projectId}/${dataType}-data/labels/${oldLabelName}/rename`,
+        `/api/image-classing/projects/${projectId}/${dataType}-data/labels/${oldLabelName}/rename`,
         { newLabelName },
         { withCredentials: true }
       );
 
       if (response.data.success) {
         await fetchLabels();
+        setSelectedImages([]); // 選択状態をクリア
       } else {
         setError(response.data.message || 'ラベルリネームに失敗しました。');
       }
@@ -122,12 +123,13 @@ const useProjectPageCommon = ({ projectId, user, dataType }: UseProjectPageCommo
 
     try {
       const response = await axios.delete(
-        `http://localhost:3001/api/image-classing/projects/${projectId}/${dataType}-data/labels/${label}`,
+        `/api/image-classing/projects/${projectId}/${dataType}-data/labels/${label}`,
         { withCredentials: true }
       );
 
       if (response.data.success) {
         await fetchLabels();
+        setSelectedImages([]); // 選択状態をクリア
       } else {
         setError(response.data.message || 'ラベル削除に失敗しました。');
       }
@@ -151,7 +153,7 @@ const useProjectPageCommon = ({ projectId, user, dataType }: UseProjectPageCommo
     try {
       const deletePromises = selectedImages.map((img) =>
         axios.delete(
-          `http://localhost:3001/api/image-classing/projects/${img.projectId}/${dataType}-data/labels/${img.labelName}/images/${img.imageName}`,
+          `/api/image-classing/projects/${img.projectId}/${dataType}-data/labels/${img.labelName}/images/${img.imageName}`,
           { withCredentials: true }
         )
       );
@@ -204,6 +206,7 @@ const useProjectPageCommon = ({ projectId, user, dataType }: UseProjectPageCommo
 
   const handleUploadSuccess = async (label: string) => {
     await fetchLabelImages(label);
+    setSelectedImages([]); // 選択状態をクリア
   };
 
   const fetchVerificationResults = async (label: string) => {
@@ -211,7 +214,7 @@ const useProjectPageCommon = ({ projectId, user, dataType }: UseProjectPageCommo
 
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/image-classing/projects/${projectId}/${dataType}-data/labels/${label}/verification-results`,
+        `/api/image-classing/projects/${projectId}/${dataType}-data/labels/${label}/verification-results`,
         { withCredentials: true }
       );
 
@@ -247,7 +250,7 @@ const useProjectPageCommon = ({ projectId, user, dataType }: UseProjectPageCommo
 
     try {
       const response = await axios.post(
-        `http://localhost:3001/api/image-classing/projects/${projectId}/${dataType}-data/labels/${label}/verify`,
+        `/api/image-classing/projects/${projectId}/${dataType}-data/labels/${label}/verify`,
         {},
         { withCredentials: true }
       );

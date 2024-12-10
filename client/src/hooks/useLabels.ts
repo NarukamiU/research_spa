@@ -11,7 +11,7 @@ const useLabels = (projectId: string) => {
     const fetchLabels = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/api/image-classing/projects/${projectId}/training-data/labels`,
+          `/api/image-classing/projects/${projectId}/training-data/labels`,
           { withCredentials: true }
         );
         if (response.data.success) {

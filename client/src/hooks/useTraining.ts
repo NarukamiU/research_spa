@@ -11,7 +11,7 @@ const useTraining = (page: string, projectName: string | undefined) => {
 
   useEffect(() => {
     if (page === 'project' && projectName) {
-      const newSocket = io('http://localhost:3001', { withCredentials: true });
+      const newSocket = io('/', { withCredentials: true });
       setSocket(newSocket);
 
       newSocket.on('connect', () => {

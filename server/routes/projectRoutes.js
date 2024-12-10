@@ -14,17 +14,7 @@ const { v4: uuidv4 } = require('uuid');
 const trainingStorage = multer.diskStorage({
   destination: function(req, file, cb) {
     const { projectId, labelName } = req.params;
-    const uploadPath = path.join(
-      __dirname,
-      '..',
-      '..',
-      'uploads',
-      req.session.username,
-      'image-classing',
-      projectId,
-      'training-data',
-      labelName
-    );
+    const uploadPath = path.join(__dirname, '..', '..', 'uploads', req.session.username, 'image-classing', projectId, 'training-data', labelName);
     cb(null, uploadPath);
   },
   filename: function(req, file, cb) {
@@ -40,17 +30,7 @@ const trainingUpload = multer({ storage: trainingStorage });
 const verifyStorage = multer.diskStorage({
   destination: function(req, file, cb) {
     const { projectId, labelName } = req.params;
-    const uploadPath = path.join(
-      __dirname,
-      '..',
-      '..',
-      'uploads',
-      req.session.username,
-      'image-classing',
-      projectId,
-      'verify-data',
-      labelName
-    );
+    const uploadPath = path.join(__dirname,'..','..','uploads',req.session.username,'image-classing',projectId,'verify-data',labelName);
     cb(null, uploadPath);
   },
   filename: function(req, file, cb) {

@@ -16,7 +16,7 @@ const useProjectData = (projectId: string) => {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/api/image-classing/projects/${projectId}`, { withCredentials: true });
+        const response = await axios.get(`/api/image-classing/projects/${projectId}`, { withCredentials: true });
         console.log('API Response:', response.data); // デバッグ用
         if (response.data.success) {
           setProject(response.data.project);

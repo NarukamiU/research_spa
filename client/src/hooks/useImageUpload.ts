@@ -26,7 +26,7 @@ const useImageUpload = ({ projectId, labelName, onUploadSuccess }: UseImageUploa
 
     try {
       const response = await axios.post(
-        `http://localhost:3001/api/image-classing/projects/${projectId}/training-data/labels/${labelName}/upload`,
+        `/api/image-classing/projects/${projectId}/training-data/labels/${labelName}/upload`,
         formData,
         {
           withCredentials: true,

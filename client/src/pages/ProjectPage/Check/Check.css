@@ -27,18 +27,21 @@
   font-weight: bold;
 }
 
-/* 一括削除ボタンのスタイル */
-.bulk-delete-button {
-  padding: 8px 16px;
-  background-color: #f5222d; /* 赤色 */
+.toggle-verification-button {
+  padding: 10px 20px;
+  background: linear-gradient(45deg, #00c6ff, #0072ff);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 25px;
   cursor: pointer;
-  margin-left: 10px;
-  transition: background-color 0.3s;
+  font-size: 14px;
+  margin-left: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
 }
 
-.bulk-delete-button:hover {
-  background-color: #cf1322;
+.toggle-verification-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(45deg, #005bea, #00c6ff);
 }

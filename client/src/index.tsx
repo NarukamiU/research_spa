@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import { AuthProvider } from './contexts/AuthContext.tsx';
 import { BrowserRouter as Router } from 'react-router-dom'; // Routerをインポート
-
+import './index.css';
 const container = document.getElementById('root');
 
 if (container) {

@@ -2,14 +2,16 @@
 
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { AuthContext } from '../../contexts/AuthContext.tsx';
+import './LoginPage.css';
+import useLogin from '../../hooks/useLogin.ts';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { isAuthenticated, refreshAuth } = useContext(AuthContext);
+  const { isAuthenticated } = useContext(AuthContext);
+  const { handleLogin, handleRegister } = useLogin(); // フックから関数を取得
 
   // ユーザーが既に認証されている場合、トップページにリダイレクト
   useEffect(() => {
@@ -18,64 +20,37 @@ const Login: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleLogin = async () => {
-    if (username && password) {
-      try {
-        const response = await axios.post(
-          'http://localhost:3001/api/auth/login',
-          { username, password },
-          { withCredentials: true }
-        );
-        if (response.data.success) {
-          refreshAuth(); // 認証状態を更新
-          navigate('/');
-        } else {
-          alert('Login failed');
-        }
-      } catch (error) {
-        console.error('Login error:', error);
-        alert('Login error');
-      }
-    }
+  const onLoginClick = () => {
+    handleLogin({ username, password });
   };
 
-  const handleRegister = async () => {
-    if (username && password) {
-      try {
-        const response = await axios.post(
-          'http://localhost:3001/api/auth/register',
-          { username, password },
-          { withCredentials: true }
-        );
-        if (response.data.success) {
-          alert('Registered successfully!');
-        } else {
-          alert('Registration failed');
-        }
-      } catch (error) {
-        console.error('Registration error:', error);
-        alert('Registration error');
-      }
-    }
+  const onRegisterClick = () => {
+    handleRegister({ username, password });
   };
 
   return (
-    <div>
-      <h1>Login</h1>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <input
-        type="password" // 修正: type 属性を正しく設定
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button onClick={handleLogin}>Login</button>
-      <button onClick={handleRegister}>Register</button>
+    <div className="login-container">
+      <div className="login-box">
+        <h2 className="login-title">ログイン</h2>
+        <input
+          type="text"
+          placeholder="ユーザー名"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="login-input"
+        />
+        <input
+          type="password" 
+          placeholder="パスワード"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="login-input"
+        />
+        <div className="button-group">
+          <button onClick={onLoginClick} className="login-button">ログイン</button>
+          <button onClick={onRegisterClick} className="register-button">登録</button>
+        </div>
+      </div>
     </div>
   );
 };

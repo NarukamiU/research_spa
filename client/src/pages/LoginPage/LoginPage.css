@@ -1,0 +1,83 @@
+/* client/src/pages/LoginPage/LoginPage.css */
+
+/* login-container のスタイル */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* ビューポート全体の高さ */
+    width: 100%; /* 幅を100%に設定 */
+    background: linear-gradient(135deg, #ece9e6, #ffffff);
+  }
+  
+  /* login-box のスタイル */
+  .login-box {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    width: 350px;
+    max-width: 90%; /* 幅を画面サイズに応じて調整 */
+    text-align: center;
+  }
+  
+  /* タイトルのスタイル */
+  .login-title {
+    margin-bottom: 30px;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  /* 入力フィールドのスタイル */
+  .login-input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    transition: border-color 0.3s;
+  }
+  
+  .login-input:focus {
+    border-color: #6a11cb;
+    outline: none;
+  }
+  
+  /* ボタングループのスタイル */
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  /* ログインボタンと登録ボタンのスタイル */
+  .login-button,
+  .register-button {
+    flex: 1;
+    padding: 12px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+  }
+  
+  .login-button {
+    background: linear-gradient(45deg, #6a11cb, #2575fc);
+  }
+  
+  .login-button:hover {
+    background: linear-gradient(45deg, #5a0ebc, #1563e2);
+    transform: translateY(-2px);
+  }
+  
+  .register-button {
+    background: linear-gradient(45deg, #ff416c, #ff4b2b);
+  }
+  
+  .register-button:hover {
+    background: linear-gradient(45deg, #e03560, #e03f21);
+    transform: translateY(-2px);
+  }

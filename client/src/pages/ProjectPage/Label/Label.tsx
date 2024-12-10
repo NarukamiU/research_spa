@@ -6,7 +6,7 @@ import MoveModal from '../../../components/ProjectPage/MoveModal/MoveModal.tsx';
 import ImageUpload from '../../../components/ProjectPage/ImageUpload/ImageUpload.tsx';
 import NewLabel from '../../../components/ProjectPage/NewLabel/NewLabel.tsx';
 import RenameLabelModal from '../../../components/ProjectPage/RenameLabelModal/RenameLabelModal.tsx';
-import useProjectPageCommon from '../../../hooks/useProjectPage.ts';
+import useProjectPage from '../../../hooks/useProjectPage.ts';
 import './Label.css';
 
 interface LabelProps {
@@ -39,7 +39,7 @@ const Label: React.FC<LabelProps> = ({
     handleSelectImage,
     handleLabelAdded,
     handleMoveImages,
-  } = useProjectPageCommon({ projectId, user, dataType: 'training' });
+  } = useProjectPage({ projectId, user, dataType: 'training' });
 
   // モーダルのステートを個別に管理
   const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);

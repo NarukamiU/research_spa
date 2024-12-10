@@ -35,18 +35,3 @@
   flex-wrap: wrap;
   gap: 15px;
 }
-
-.bulk-delete-button {
-  padding: 8px 16px;
-  background-color: #f5222d; /* 赤色 */
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-left: 10px;
-  transition: background-color 0.3s;
-}
-
-.bulk-delete-button:hover {
-  background-color: #cf1322;
-}

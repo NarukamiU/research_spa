@@ -78,7 +78,7 @@ const useVerificationResults = ({ projectId, user }: UseVerificationResultsProps
 
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/image-classing/projects/${projectId}/verify-data/labels`,
+        `/api/image-classing/projects/${projectId}/verify-data/labels`,
         { withCredentials: true }
       );
 
@@ -100,7 +100,7 @@ const useVerificationResults = ({ projectId, user }: UseVerificationResultsProps
 
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/image-classing/projects/${projectId}/verify-data/labels/${label}/images`,
+        `/api/image-classing/projects/${projectId}/verify-data/labels/${label}/images`,
         { withCredentials: true }
       );
 
@@ -119,7 +119,7 @@ const useVerificationResults = ({ projectId, user }: UseVerificationResultsProps
 
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/image-classing/projects/${projectId}/verify-data/verification-results`,
+        `/api/image-classing/projects/${projectId}/verify-data/verification-results`,
         { withCredentials: true }
       );
 
@@ -153,7 +153,7 @@ const useVerificationResults = ({ projectId, user }: UseVerificationResultsProps
 
     try {
       const response = await axios.post(
-        `http://localhost:3001/api/image-classing/projects/${projectId}/verify-data/labels/${label}/verify`,
+        `/api/image-classing/projects/${projectId}/verify-data/labels/${label}/verify`,
         {},
         { withCredentials: true }
       );

@@ -27,20 +27,23 @@
     font-size: 1.5em;
 }
 
-/* 共通の削除ボタンのスタイル */
+/* ラベル削除ボタンのスタイル */
 .delete-label-button {
-    padding: 6px 12px;
-    background-color: #ff4d4f;
+    padding: 10px 20px;
+    background: linear-gradient(45deg, #ff416c 0%, #ff4b2b 100%);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 25px;
     cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .delete-label-button:hover {
-    background-color: #ff7875;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
-
 
 .delete-image-button {
     position: absolute;
@@ -60,30 +63,59 @@
     background-color: rgba(211, 47, 47, 0.9);
 }
 
-/* 共通のリネームボタンのスタイル */
+/* リネームボタンのスタイル */
 .rename-label-button {
-    padding: 6px 12px;
-    background-color: #1890ff;
+    padding: 10px 20px;
+    background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 25px;
     cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .rename-label-button:hover {
-    background-color: #40a9ff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* 共通の新しいラベルボタンのスタイル */
+/* 更新された .new-label-button */
 .new-label-button {
-    background-color: #4CAF50;
+    padding: 10px 20px;
+    background: linear-gradient(45deg, #ff6b6b, #f06595);
     color: white;
     border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
+    border-radius: 25px;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.2s;
+    font-size: 14px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+}
+
+.new-label-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(45deg, #ff5252, #ff4081);
+}
+
+/* 検証開始ボタンのスタイル */
+.verify-button {
+    padding: 10px 20px;
+    background: linear-gradient(45deg, #ff8a00 0%, #e52e71 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.verify-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
 .new-label-button:hover {
