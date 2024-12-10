@@ -22,19 +22,20 @@ const port = 3001;
 app.use(bodyParser.json());
 
 //ローカルの場合
-/*
 app.use(cors({
   origin: 'http://localhost:3000', // クライアントのURL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true, // クッキーを使用する場合
 }));
-*/
 
+/*
 app.use(cors({
   origin: 'https://research-spa2.vercel.app', // クライアントのURL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true, // クッキーを使用する場合
 }));
+*/
+
 
 app.use(cookieParser());
 app.use(sessionMiddleware);

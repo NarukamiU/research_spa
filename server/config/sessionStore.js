@@ -3,7 +3,7 @@
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 
-/*
+
 const sessionStore = new MySQLStore({
   host: 'localhost',
   port: 3306,
@@ -11,8 +11,8 @@ const sessionStore = new MySQLStore({
   password: 'LV~8VNbnAYt2',       // MySQLのパスワード
   database: 'research_spa',       // 使用するデータベース
 });
-*/
 
+/*
 // セッションストアの設定
 const sessionStore = new MySQLStore({
   host: process.env.DB_HOST,
@@ -21,6 +21,6 @@ const sessionStore = new MySQLStore({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
 });
-
+*/
 
 module.exports = sessionStore;

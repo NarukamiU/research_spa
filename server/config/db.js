@@ -4,13 +4,13 @@ const mysql = require('mysql2');
 const util = require('util');
 require('dotenv').config(); // dotenv をロード
 
-/*const db = mysql.createConnection({
+const db = mysql.createConnection({
   host: process.env.DB_HOST,       // 環境変数を使用
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
 });
-*/
+/*
 const db = mysql.createConnection({
   host: process.env.DB_HOST,         // Renderで設定したDB_HOST
   port: process.env.DB_PORT,         // Renderで設定したDB_PORT
@@ -21,6 +21,7 @@ const db = mysql.createConnection({
     rejectUnauthorized: true,        // 必要に応じて設定
   },
 });
+*/
 
 // プロミス化
 db.query = util.promisify(db.query).bind(db);
