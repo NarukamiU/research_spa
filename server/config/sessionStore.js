@@ -2,25 +2,14 @@
 
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
-
+require('dotenv').config(); // dotenv をロード
 
 const sessionStore = new MySQLStore({
-  host: 'localhost',
-  port: 3306,
-  user: 'root',                   // MySQLのユーザー名
-  password: 'LV~8VNbnAYt2',       // MySQLのパスワード
-  database: 'research_spa',       // 使用するデータベース
+  host: process.env.DB_HOST,       // 環境変数を使用
+  port: process.env.DB_PORT || 3306,    // 環境変数を使用、デフォルトは3306
+  user: process.env.DB_USER,       // 環境変数を使用
+  password: process.env.DB_PASSWORD, // 環境変数を使用
+  database: process.env.DB_NAME,   // 環境変数を使用
 });
-
-/*
-// セッションストアの設定
-const sessionStore = new MySQLStore({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-});
-*/
 
 module.exports = sessionStore;

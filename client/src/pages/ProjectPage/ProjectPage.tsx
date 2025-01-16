@@ -9,6 +9,7 @@ import Check from './Check/Check.tsx';
 import Lightbox from '../../components/ProjectPage/Lightbox/Lightbox.tsx';
 import MoveModal from '../../components/ProjectPage/MoveModal/MoveModal.tsx';
 import { AuthContext } from '../../contexts/AuthContext.tsx';
+
 import useProjectData from '../../hooks/useProjectData.ts';
 import useLabels from '../../hooks/useLabels.ts';
 import useProjectPageUI from '../../hooks/useProjectPageUI.ts';
